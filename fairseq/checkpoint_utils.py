@@ -351,6 +351,9 @@ def load_checkpoint_to_cpu(path, arg_overrides=None, load_on_all_ranks=False):
         from omegaconf import __version__ as oc_version
         from omegaconf import _utils
 
+        state["cfg"]["model"]["w2v_path"] = "/content/Moutput/mhubert_base_vp_en_es_fr_it3.pt"
+        state["cfg"]["task"]["normalize"] = False
+
         if oc_version < "2.2":
             old_primitive = _utils.is_primitive_type
             _utils.is_primitive_type = lambda _: True
@@ -364,6 +367,8 @@ def load_checkpoint_to_cpu(path, arg_overrides=None, load_on_all_ranks=False):
 
         if arg_overrides is not None:
             overwrite_args_by_name(state["cfg"], arg_overrides)
+
+        
 
     state = _upgrade_state_dict(state)
     return state
@@ -611,6 +616,7 @@ def _upgrade_state_dict(state):
     """Helper for upgrading old model checkpoints."""
 
     # add optimizer_history
+    
     if "optimizer_history" not in state:
         state["optimizer_history"] = [
             {"criterion_name": "CrossEntropyCriterion", "best_loss": state["best_loss"]}
@@ -739,6 +745,8 @@ def _upgrade_state_dict(state):
                 )
             ):
                 cfg.model.w2v_args.task.eval_wer_config.print_alignment = "hard"
+    state["cfg"]["model"]["w2v_path"] = "/content/Moutput/mhubert_base_vp_en_es_fr_it3.pt"
+    state["cfg"]["task"]["normalize"] = False
 
     return state
 
